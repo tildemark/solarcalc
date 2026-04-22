@@ -1,16 +1,16 @@
 # ☀️ SolarCalc
 
-**SolarCalc** is a professional-grade solar system design and sizing engine. It goes beyond basic wattage calculators by functioning as an expert system—calculating precise Bill of Materials (BOM), determining series/parallel stringing, supporting inverter stacking, and providing dynamic wiring diagrams. Crucially, SolarCalc explains *why* each component and configuration was chosen.
+**SolarCalc** is a professional-grade solar system design and sizing engine. It goes beyond basic wattage calculators by functioning as an expert system—calculating precise Bill of Materials (BOM), determining series/parallel stringing, supporting inverter stacking, and providing interactive wiring diagrams. Users can save their designs to their account and generate public, shareable links with dynamic social media previews.
 
 ## ✨ Features
 
-* **Comprehensive System Sizing:** Precisely calculates inverter capacity, solar array size, and battery bank requirements based on user inputs (daily kWh, peak demand, autonomy, peak sun hours).
-* **Advanced Configurations:** * Calculates panel stringing (Series/Parallel) based on Inverter MPPT voltage limits.
-  * Supports **Inverter Stacking**: Calculates parallel syncing for high single-phase loads or Split-Phase series stacking for 120V/240V systems.
-* **Intelligent BOM Generation:** Automatically calculates required accessories including breakers (sized to NEC 1.25x standards), mounting hardware (L-feet, mid/end clamps), and communication cables.
-* **Educational Explanations:** Generates human-readable explanations detailing the engineering logic behind the selected components and configurations.
-* **Connection Diagrams:** Dynamically renders visual schematics of the proposed system wiring.
-* **Component Inventory:** Powered by a relational database of real-world solar components, enabling accurate matching rather than generic estimates.
+* **Comprehensive System Sizing:** Precisely calculates inverter capacity, solar array size, and battery bank requirements based on user inputs.
+* **Advanced Engineering Rules:** * Calculates panel stringing (Series/Parallel) based on Inverter MPPT limits.
+  * Supports **Inverter Stacking**: Parallel syncing or Split-Phase series stacking for 120V/240V systems.
+* **Interactive Connection Diagrams:** Powered by React Flow, generating dynamic, zoomable, and interactive visual schematics of the proposed system wiring.
+* **Intelligent BOM Generation:** Automatically sizes breakers to NEC standards and includes required accessories (mounts, cables).
+* **Frictionless Auth & Project Saving:** Users can securely log in via Google OAuth to save, edit, and manage their system designs.
+* **Viral Sharing & Open Graph:** Generate secure, unique links for saved projects. Includes dynamic Open Graph (OG) image generation, so sharing a project on Facebook or Reddit automatically displays a visually appealing summary card (e.g., "8kW Inverter | 12 Panels") in the feed.
 
 ## 🛠 Tech Stack
 
@@ -18,17 +18,19 @@
 * **Language:** [TypeScript](https://www.typescriptlang.org/)
 * **UI Components:** [shadcn/ui](https://ui.shadcn.com/) & [Tailwind CSS](https://tailwindcss.com/)
 * **Database ORM:** [Prisma](https://www.prisma.io/)
-* **Database:** [PostgreSQL](https://www.postgresql.org/) (Component inventory & user saved designs)
-* **Caching/State:** [Redis](https://redis.io/) (Session management & multi-step wizard state)
+* **Database:** [PostgreSQL](https://www.postgresql.org/)
+* **Authentication:** [Auth.js](https://authjs.dev/) (formerly NextAuth, integrated with Google provider)
+* **Caching/State:** [Redis](https://redis.io/) 
 * **Diagrams:** [React Flow](https://reactflow.dev/)
+* **Social Previews:** `@vercel/og` (Dynamic Image Generation)
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 Make sure you have the following installed:
 * Node.js (v18+)
-* PostgreSQL (Running locally or via a cloud provider like Supabase/Neon)
-* Redis (Running locally or via a cloud provider like Upstash)
+* PostgreSQL 
+* Redis 
 
 ### Installation
 
@@ -36,38 +38,38 @@ Make sure you have the following installed:
    ```bash
    git clone [https://github.com/yourusername/solarcalc.git](https://github.com/yourusername/solarcalc.git)
    cd solarcalc
-````
+   ```
 
 2.  **Install dependencies:**
 
     ```bash
     npm install
-    # or
-    pnpm install
-    # or
-    yarn install
     ```
 
 3.  **Set up Environment Variables:**
-    Create a `.env` file in the root directory and add your connection strings. See `.env.example` for reference:
+    Create a `.env` file in the root directory. You will need to configure your Google Cloud Console for the OAuth credentials:
 
     ```env
-    # PostgreSQL Database URL
+    # Database & Cache
     DATABASE_URL="postgresql://user:password@localhost:5432/solarcalc?schema=public"
-
-    # Redis URL
     REDIS_URL="redis://localhost:6379"
+
+    # Authentication (Auth.js)
+    NEXTAUTH_URL="http://localhost:3000"
+    NEXTAUTH_SECRET="generate_a_random_secret_string"
+    GOOGLE_CLIENT_ID="your_google_client_id.apps.googleusercontent.com"
+    GOOGLE_CLIENT_SECRET="your_google_client_secret"
     ```
 
 4.  **Initialize the Database:**
-    Push the Prisma schema to your PostgreSQL database and generate the Prisma Client.
+    Push the Prisma schema to your PostgreSQL database.
 
     ```bash
     npx prisma db push
     npx prisma generate
     ```
 
-5.  **Seed the Database (Optional but recommended):**
+5.  **Seed Component Inventory:**
     Populate the database with sample solar panels, inverters, and batteries.
 
     ```bash
@@ -80,26 +82,18 @@ Make sure you have the following installed:
     npm run dev
     ```
 
-    Open [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000) with your browser to see the result.
-
 ## 🗄️ Database Schema Overview
 
-The Prisma schema is designed to handle complex relationships between components:
+The database is divided into two logical zones:
 
-  * `Inverter`: Stores wattage, voltage, MPPT ranges, and stackability (`isStackable`, `supportsSplitPhase`).
-  * `SolarPanel`: Stores wattage, Voc, Isc, and dimensions.
-  * `Battery`: Stores capacity (Ah), voltage, chemistry (LiFePO4, Lead Acid), and max DoD.
-  * `Project`: Saves user-generated system designs and configurations.
+1.  **Auth Zone (Auth.js):** Standard `User`, `Account`, and `Session` tables to handle Google OAuth seamlessly.
+2.  **App Zone:** \* `Project`: Stores user designs. Includes a `uuid` for secure sharing and an `isPublic` boolean to control visibility.
+      * `Inventory`: `Inverter`, `SolarPanel`, and `Battery` tables defining the physical constraints and specifications of real-world hardware.
 
 ## 🧠 Core Logic Engine
 
-The calculation engine (`/lib/calculator`) acts as an expert system evaluating inputs against NEC safety standards and component constraints. For a deep dive into the rules engine and prompt logic guiding the system, see [`agent.md`](https://www.google.com/search?q=./agent.md).
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome\! Feel free to check the [issues page](https://www.google.com/search?q=https://github.com/yourusername/solarcalc/issues).
+The calculation engine (`/lib/calculator`) acts as an expert system evaluating inputs against standard safety rules. For a deep dive into the rules engine and AI prompt logic guiding the explanations, see [`agent.md`](https://www.google.com/search?q=./agent.md).
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
-
+This project is licensed under the MIT License.
