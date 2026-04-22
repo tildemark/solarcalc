@@ -2,6 +2,75 @@
 
 **SolarCalc** is a professional-grade solar system design and sizing engine. It goes beyond basic wattage calculators by functioning as an expert system—calculating precise Bill of Materials (BOM), determining series/parallel stringing, supporting inverter stacking, and providing interactive wiring diagrams. Users can save their designs to their account and generate public, shareable links with dynamic social media previews.
 
+## 🌍 Production URL
+
+SolarCalc is configured for production at:
+
+`https://solarcalc.sanchez.ph`
+
+The app metadata and `.env.example` defaults in this repository use that domain.
+
+## ✅ Current Implementation Status
+
+This repository now contains a working Next.js (App Router) implementation with:
+
+* A typed solar calculation engine in `lib/calculator/engine.ts`
+* A POST API endpoint at `/api/calculate`
+* A web UI for entering system requirements and viewing results JSON
+* Build + lint verified successfully
+
+## 🔐 Auth + Persistence + Diagram
+
+This app now also includes:
+
+* Google sign-in with Auth.js
+* Prisma schema for users, sessions, accounts, and saved projects
+* Project save flow from the calculator API when `save_project = true`
+* Public share pages at `/p/[shareId]`
+* React Flow diagram rendering for generated wiring data
+
+### Setup for Database and Auth
+
+1. Copy `.env.example` to `.env` and fill in real values.
+2. Generate Prisma client:
+    ```bash
+    npx prisma generate
+    ```
+3. Push schema to your database:
+    ```bash
+    npx prisma db push
+    ```
+4. Run the app:
+    ```bash
+    npm run dev
+    ```
+
+## 🧭 TODO Roadmap
+
+The following items are not yet fully implemented and track the current gap between goals in `README.md` + `data/agent.md` and the shipped code.
+
+### Missing Features
+
+- [ ] Add Redis caching/state integration for calculation requests and/or project retrieval.
+- [ ] Add dynamic Open Graph image generation (`@vercel/og`) for shared project URLs.
+- [ ] Add inventory models in Prisma (`Inverter`, `SolarPanel`, `Battery`) and link sizing logic to inventory records.
+- [ ] Add inventory seed pipeline (`npm run seed`) with sample components.
+- [ ] Add saved-project management UI (list, edit, delete, visibility toggle) for authenticated users.
+- [ ] Implement the documented Tailwind + shadcn/ui stack (or update docs if custom CSS remains the chosen approach).
+
+### Partial Features To Complete
+
+- [ ] Improve React Flow interaction model (currently basic rendering; add richer interactive behavior where needed).
+- [ ] Render explanation text as contextual UI help (tooltips/hover cards), not only in raw payload views.
+- [ ] Add explicit master/slave visual hierarchy for stacked inverters in diagram output.
+- [ ] Align API response shape with strict agent JSON format (or document the current `{ result, save }` wrapper contract).
+
+### Nice-To-Have Hardening
+
+- [ ] Add tests for core calculator rules (inverter sizing, battery DoD logic, MPPT stringing boundaries).
+- [ ] Add API validation/schema guardrails for request payloads.
+- [ ] Add role/ownership checks for shared project privacy and future project management endpoints.
+
 ## ✨ Features
 
 * **Comprehensive System Sizing:** Precisely calculates inverter capacity, solar array size, and battery bank requirements based on user inputs.
@@ -36,7 +105,7 @@ Make sure you have the following installed:
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/yourusername/solarcalc.git](https://github.com/yourusername/solarcalc.git)
+   git clone [https://github.com/tildemark/solarcalc.git](https://github.com/tildemark/solarcalc.git)
    cd solarcalc
    ```
 
