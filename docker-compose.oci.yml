@@ -6,15 +6,12 @@ services:
     container_name: solarcalc-app
     restart: unless-stopped
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-solarcalc}?schema=public}
+      DATABASE_URL: postgresql://postgres:R8p4Kx2Nw7Qm5Vb9@postgres:5432/solarcalc?schema=public
       AUTH_SECRET: ${AUTH_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
-      POSTGRES_DB: ${POSTGRES_DB:-solarcalc}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       NODE_ENV: production
       PORT: 3000
     expose:
@@ -44,9 +41,9 @@ services:
     container_name: solarcalc-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-solarcalc}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: solarcalc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: R8p4Kx2Nw7Qm5Vb9
     volumes:
       - solarcalc_pgdata:/var/lib/postgresql/data
     healthcheck:

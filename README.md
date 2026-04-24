@@ -118,15 +118,14 @@ Recommended flow on an OCI Always Free Ampere VM:
 docker network create net
 ```
 
-2. Configure environment
-- In Portainer Stack, add Environment variables.
-- Set production values:
-  - `NEXTAUTH_URL=https://your-domain`
-  - `NEXT_PUBLIC_APP_URL=https://your-domain`
-  - strong `AUTH_SECRET`
-  - production `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
-  - `DATABASE_URL=postgresql://<user>:<pass>@postgres:5432/solarcalc?schema=public` (when using the Postgres service in this stack)
-  - or set `DATABASE_URL` to your managed Postgres endpoint
+2. Configure stack values
+- Database settings are embedded in `docker-compose.oci.yml`.
+- Set app/auth/domain values in Portainer Stack Environment:
+  - `AUTH_SECRET`
+  - `GOOGLE_CLIENT_ID`
+  - `GOOGLE_CLIENT_SECRET`
+  - `NEXTAUTH_URL`
+  - `NEXT_PUBLIC_APP_URL`
 
 3. Deploy with Portainer Stacks
 - In Portainer, create/update a stack using `docker-compose.oci.yml`.
@@ -156,8 +155,7 @@ Notes:
 
 Troubleshooting:
 - If app logs show `P1000 Authentication failed`, your app `DATABASE_URL` password does not match `POSTGRES_PASSWORD`.
-- In this stack, the app `DATABASE_URL` is derived from `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` unless you explicitly override `DATABASE_URL`.
-- If you set `DATABASE_URL` manually in Portainer, ensure it uses the same credentials as the Postgres service.
+- In this stack, credentials are defined directly in `docker-compose.oci.yml`; keep app `DATABASE_URL` and Postgres password aligned when editing.
 
 ## Share vs Save Behavior
 
