@@ -131,11 +131,11 @@ docker network create net
 3. Deploy with Portainer Stacks
 - In Portainer, create/update a stack using `docker-compose.oci.yml`.
 - Build and start the stack.
-- The app container is reachable on Docker network at `solarcalc-app:3000`.
+- The app container is reachable on Docker network at `solarcalc:3000` (or alias `solarcalc-app:3000`).
 
 4. Configure Nginx Proxy Manager
 - Proxy Host domain: `your-domain`
-- Forward Hostname/IP: `solarcalc-app`
+- Forward Hostname/IP: `solarcalc`
 - Forward Port: `3000`
 - Scheme: `http`
 - Enable WebSocket support.
@@ -151,7 +151,7 @@ docker network create net
 
 Notes:
 - `docker-compose.oci.yml` uses an external Docker network named `net` so Nginx Proxy Manager can route directly to the app container.
-- The container start command runs `prisma migrate deploy` before starting Next.js.
+- The container start command retries `prisma db push` until the database is reachable, then starts Next.js.
 - If you keep DB inside the same stack, set strong Postgres credentials before production use.
 
 ## Share vs Save Behavior

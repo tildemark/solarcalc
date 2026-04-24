@@ -26,4 +26,4 @@ COPY prisma ./prisma
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma db push; node server.js"]
+CMD ["sh", "-c", "until npx prisma db push; do echo 'Waiting for database...'; sleep 3; done; node server.js"]
