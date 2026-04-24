@@ -4,6 +4,8 @@ import { SavedBuildActions } from "@/components/saved-build-actions";
 import { BUILD_RETENTION_DAYS, getBuildExpiryCutoff } from "@/lib/build-retention";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const session = await safeAuth();
   const userEmail = session?.user?.email ?? null;
