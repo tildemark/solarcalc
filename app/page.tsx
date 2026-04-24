@@ -10,17 +10,26 @@ export default async function Home() {
   const session = await safeAuth();
   const userEmail = session?.user?.email ?? null;
   const retentionCutoff = getBuildExpiryCutoff();
+  let dbWarning: string | null = null;
+  let savedBuilds: Array<{
+    id: string;
+    name: string;
+    shareId: string;
+    createdAt: Date;
+    isPublic: boolean;
+  }> = [];
 
-  await prisma.project.deleteMany({
-    where: {
-      createdAt: {
-        lt: retentionCutoff,
+  try {
+    await prisma.project.deleteMany({
+      where: {
+        createdAt: {
+          lt: retentionCutoff,
+        },
       },
-    },
-  });
+    });
 
-  const savedBuilds = userEmail
-    ? await prisma.project.findMany({
+    if (userEmail) {
+      savedBuilds = await prisma.project.findMany({
         where: {
           user: {
             email: userEmail,
@@ -40,8 +49,12 @@ export default async function Home() {
           createdAt: true,
           isPublic: true,
         },
-      })
-    : [];
+      });
+    }
+  } catch (error) {
+    dbWarning = "Database connection is not ready yet. You can still open the app; build history may be unavailable temporarily.";
+    console.error("[home] Database access failed", error);
+  }
 
   return (
     <main className="container stack">
@@ -130,6 +143,12 @@ export default async function Home() {
         </div>
       </section>
       <CalculatorForm userEmail={userEmail} />
+
+      {dbWarning ? (
+        <section className="panel">
+          <p style={{ margin: 0, color: "var(--muted)" }}>{dbWarning}</p>
+        </section>
+      ) : null}
 
       {userEmail ? (
         <section className="panel stack">
