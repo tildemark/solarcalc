@@ -154,6 +154,11 @@ Notes:
 - The container start command retries `prisma db push` until the database is reachable, then starts Next.js.
 - If you keep DB inside the same stack, set strong Postgres credentials before production use.
 
+Troubleshooting:
+- If app logs show `P1000 Authentication failed`, your app `DATABASE_URL` password does not match `POSTGRES_PASSWORD`.
+- In this stack, the app `DATABASE_URL` is derived from `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD` unless you explicitly override `DATABASE_URL`.
+- If you set `DATABASE_URL` manually in Portainer, ensure it uses the same credentials as the Postgres service.
+
 ## Share vs Save Behavior
 
 - Share: created for each calculation so users can open/share a public build URL.
