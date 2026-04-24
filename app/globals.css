@@ -1,3 +1,5 @@
+@import "katex/dist/katex.min.css";
+
 :root {
   --bg: #f6f8f5;
   --surface: #ffffff;
@@ -51,6 +53,14 @@ a {
   margin: 10px 0 0;
   max-width: 68ch;
   color: rgba(244, 249, 238, 0.92);
+}
+
+.hero-banner {
+  width: 100%;
+  margin-top: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(244, 249, 238, 0.28);
+  background: rgba(9, 26, 15, 0.16);
 }
 
 .auth-row {
@@ -185,4 +195,73 @@ pre {
   border-radius: 10px;
   padding: 10px 12px;
   background: var(--surface-2);
+}
+
+.form-section {
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #f7fbf4);
+}
+
+.form-section h3 {
+  color: var(--accent);
+  letter-spacing: 0.01em;
+}
+
+.help-text {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.button-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-weight: 700;
+}
+
+.social-row {
+  gap: 8px;
+}
+
+.social-button {
+  background: #fff;
+  color: #1d2a22;
+  border: 1px solid #b9ccb9;
+  font-weight: 700;
+  padding: 9px 14px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.social-button:hover {
+  background: #f2f8ef;
+  transform: translateY(-1px);
+}
+
+.share-control {
+  gap: 10px;
+}
+
+.share-select {
+  min-width: 170px;
+  max-width: 220px;
 }

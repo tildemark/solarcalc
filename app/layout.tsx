@@ -11,6 +11,20 @@ export const metadata: Metadata = {
     url: "https://solarcalc.sanchez.ph",
     siteName: "SolarCalc",
     type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "SolarCalc solar build design platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SolarCalc",
+    description: "Design accurate grid-tied, off-grid, and hybrid systems.",
+    images: ["/opengraph-image"],
   },
 };
 

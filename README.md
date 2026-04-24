@@ -1,168 +1,200 @@
-# ☀️ SolarCalc
+# SolarCalc
 
-**SolarCalc** is a professional-grade solar system design and sizing engine. It goes beyond basic wattage calculators by functioning as an expert system—calculating precise Bill of Materials (BOM), determining series/parallel stringing, supporting inverter stacking, and providing interactive wiring diagrams. Users can save their designs to their account and generate public, shareable links with dynamic social media previews.
+SolarCalc is a Next.js application for sizing residential/commercial solar systems and producing shareable, exportable build outputs.
 
-## 🌍 Production URL
+It supports:
+- Input-driven system sizing (inverter, battery, panel count, stringing)
+- Formula-backed computation and plain-language rationale
+- Public share pages for generated builds
+- Account save flow (Google sign-in) for personal build history
+- Export options: JSON and printable quote PDF
+- Build retention policy (auto-expire after 30 days)
 
-SolarCalc is configured for production at:
+## Status
 
-`https://solarcalc.sanchez.ph`
+Current status: suitable for local development, internal demos, and staging.
 
-The app metadata and `.env.example` defaults in this repository use that domain.
+Production status: not fully hardened yet. Review the Pre-Production Checklist below before publishing.
 
-## ✅ Current Implementation Status
+## Tech Stack
 
-This repository now contains a working Next.js (App Router) implementation with:
+- Next.js (App Router)
+- TypeScript
+- Prisma + PostgreSQL
+- Auth.js (NextAuth) with Google provider
+- React + react-katex
+- React Flow (`@xyflow/react`) for system diagrams
 
-* A typed solar calculation engine in `lib/calculator/engine.ts`
-* A POST API endpoint at `/api/calculate`
-* A web UI for entering system requirements and viewing results JSON
-* Build + lint verified successfully
+## Implemented Features
 
-## 🔐 Auth + Persistence + Diagram
+- Calculator form with grouped inputs and helper text
+- Panel presets + custom panel electrical values
+- Bifacial and motor-load aware sizing
+- Dynamic computation output and explanations
+- Collapsible JSON and glossary/term definitions
+- Guest share creation on compute (`/p/[shareId]`)
+- Optional account save for signed-in users
+- Saved builds section with delete action
+- Export APIs:
+  - `GET /api/export/[shareId]` (JSON)
+  - `GET /api/export/[shareId]/quote` (printable quote HTML/PDF)
+- Retention/expiry checks in calculate/share/export paths
+- Open Graph images for site and shared builds
 
-This app now also includes:
+## Local Setup
 
-* Google sign-in with Auth.js
-* Prisma schema for users, sessions, accounts, and saved projects
-* Project save flow from the calculator API when `save_project = true`
-* Public share pages at `/p/[shareId]`
-* React Flow diagram rendering for generated wiring data
+1. Install dependencies.
 
-### Setup for Database and Auth
+```bash
+npm install
+```
 
-1. Copy `.env.example` to `.env` and fill in real values.
-2. Generate Prisma client:
-    ```bash
-    npx prisma generate
-    ```
-3. Push schema to your database:
-    ```bash
-    npx prisma db push
-    ```
-4. Run the app:
-    ```bash
-    npm run dev
-    ```
+2. Configure environment variables.
 
-## 🧭 TODO Roadmap
+Copy `.env.example` to `.env` and update values as needed.
 
-The following items are not yet fully implemented and track the current gap between goals in `README.md` + `data/agent.md` and the shipped code.
+3. Start PostgreSQL with Docker.
 
-### Missing Features
+```bash
+npm run db:up
+```
 
-- [ ] Add Redis caching/state integration for calculation requests and/or project retrieval.
-- [ ] Add dynamic Open Graph image generation (`@vercel/og`) for shared project URLs.
-- [ ] Add inventory models in Prisma (`Inverter`, `SolarPanel`, `Battery`) and link sizing logic to inventory records.
-- [ ] Add inventory seed pipeline (`npm run seed`) with sample components.
-- [ ] Add saved-project management UI (list, edit, delete, visibility toggle) for authenticated users.
-- [ ] Implement the documented Tailwind + shadcn/ui stack (or update docs if custom CSS remains the chosen approach).
+4. Initialize Prisma schema/client.
 
-### Partial Features To Complete
+```bash
+npx prisma generate
+npx prisma db push
+```
 
-- [ ] Improve React Flow interaction model (currently basic rendering; add richer interactive behavior where needed).
-- [ ] Render explanation text as contextual UI help (tooltips/hover cards), not only in raw payload views.
-- [ ] Add explicit master/slave visual hierarchy for stacked inverters in diagram output.
-- [ ] Align API response shape with strict agent JSON format (or document the current `{ result, save }` wrapper contract).
+5. Run the app.
 
-### Nice-To-Have Hardening
+```bash
+npm run dev
+```
 
-- [ ] Add tests for core calculator rules (inverter sizing, battery DoD logic, MPPT stringing boundaries).
-- [ ] Add API validation/schema guardrails for request payloads.
-- [ ] Add role/ownership checks for shared project privacy and future project management endpoints.
+## Environment Variables
 
-## ✨ Features
+Required runtime variables:
 
-* **Comprehensive System Sizing:** Precisely calculates inverter capacity, solar array size, and battery bank requirements based on user inputs.
-* **Advanced Engineering Rules:** * Calculates panel stringing (Series/Parallel) based on Inverter MPPT limits.
-  * Supports **Inverter Stacking**: Parallel syncing or Split-Phase series stacking for 120V/240V systems.
-* **Interactive Connection Diagrams:** Powered by React Flow, generating dynamic, zoomable, and interactive visual schematics of the proposed system wiring.
-* **Intelligent BOM Generation:** Automatically sizes breakers to NEC standards and includes required accessories (mounts, cables).
-* **Frictionless Auth & Project Saving:** Users can securely log in via Google OAuth to save, edit, and manage their system designs.
-* **Viral Sharing & Open Graph:** Generate secure, unique links for saved projects. Includes dynamic Open Graph (OG) image generation, so sharing a project on Facebook or Reddit automatically displays a visually appealing summary card (e.g., "8kW Inverter | 12 Panels") in the feed.
+- `DATABASE_URL`
+- `AUTH_SECRET` (or `NEXTAUTH_SECRET` fallback)
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `NEXTAUTH_URL`
+- `NEXT_PUBLIC_APP_URL`
 
-## 🛠 Tech Stack
+Notes:
+- Prisma CLI reads `.env` by default.
+- For social share previews, `NEXT_PUBLIC_APP_URL` must be a publicly reachable domain (not localhost).
 
-* **Framework:** [Next.js](https://nextjs.org/) (App Router)
-* **Language:** [TypeScript](https://www.typescriptlang.org/)
-* **UI Components:** [shadcn/ui](https://ui.shadcn.com/) & [Tailwind CSS](https://tailwindcss.com/)
-* **Database ORM:** [Prisma](https://www.prisma.io/)
-* **Database:** [PostgreSQL](https://www.postgresql.org/)
-* **Authentication:** [Auth.js](https://authjs.dev/) (formerly NextAuth, integrated with Google provider)
-* **Caching/State:** [Redis](https://redis.io/) 
-* **Diagrams:** [React Flow](https://reactflow.dev/)
-* **Social Previews:** `@vercel/og` (Dynamic Image Generation)
+## Database (Docker)
 
-## 🚀 Getting Started
+Included compose service exposes PostgreSQL on host port `5433`.
 
-### Prerequisites
-Make sure you have the following installed:
-* Node.js (v18+)
-* PostgreSQL 
-* Redis 
+Useful commands:
 
-### Installation
+```bash
+npm run db:up
+npm run db:logs
+npm run db:down
+npm run db:setup
+```
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/tildemark/solarcalc.git](https://github.com/tildemark/solarcalc.git)
-   cd solarcalc
-   ```
+## OCI Ampere + Portainer + Nginx Proxy Deployment
 
-2.  **Install dependencies:**
+This repository now includes:
 
-    ```bash
-    npm install
-    ```
+- `Dockerfile` for production container builds
+- `docker-compose.oci.yml` for app + Postgres stack deployment
 
-3.  **Set up Environment Variables:**
-    Create a `.env` file in the root directory. You will need to configure your Google Cloud Console for the OAuth credentials:
+Recommended flow on an OCI Always Free Ampere VM:
 
-    ```env
-    # Database & Cache
-    DATABASE_URL="postgresql://user:password@localhost:5432/solarcalc?schema=public"
-    REDIS_URL="redis://localhost:6379"
+1. Prepare host
+- Install Docker Engine + Docker Compose plugin.
+- Install Portainer.
+- Create shared proxy network once:
 
-    # Authentication (Auth.js)
-    NEXTAUTH_URL="http://localhost:3000"
-    NEXTAUTH_SECRET="generate_a_random_secret_string"
-    GOOGLE_CLIENT_ID="your_google_client_id.apps.googleusercontent.com"
-    GOOGLE_CLIENT_SECRET="your_google_client_secret"
-    ```
+```bash
+docker network create net
+```
 
-4.  **Initialize the Database:**
-    Push the Prisma schema to your PostgreSQL database.
+2. Configure environment
+- In Portainer Stack, add Environment variables.
+- Set production values:
+  - `NEXTAUTH_URL=https://your-domain`
+  - `NEXT_PUBLIC_APP_URL=https://your-domain`
+  - strong `AUTH_SECRET`
+  - production `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
+  - `DATABASE_URL=postgresql://<user>:<pass>@postgres:5432/solarcalc?schema=public` (when using the Postgres service in this stack)
+  - or set `DATABASE_URL` to your managed Postgres endpoint
 
-    ```bash
-    npx prisma db push
-    npx prisma generate
-    ```
+3. Deploy with Portainer Stacks
+- In Portainer, create/update a stack using `docker-compose.oci.yml`.
+- Build and start the stack.
+- The app container is reachable on Docker network at `solarcalc-app:3000`.
 
-5.  **Seed Component Inventory:**
-    Populate the database with sample solar panels, inverters, and batteries.
+4. Configure Nginx Proxy Manager
+- Proxy Host domain: `your-domain`
+- Forward Hostname/IP: `solarcalc-app`
+- Forward Port: `3000`
+- Scheme: `http`
+- Enable WebSocket support.
+- Request/issue SSL cert (Let's Encrypt) and force SSL.
 
-    ```bash
-    npm run seed
-    ```
+5. Google OAuth callback
+- In Google Cloud OAuth settings, add callback URL:
+  - `https://your-domain/api/auth/callback/google`
 
-6.  **Run the Development Server:**
+6. OCI security list / firewall
+- Open inbound `80` and `443` to the VM.
+- Keep Postgres private (do not expose `5432` publicly).
 
-    ```bash
-    npm run dev
-    ```
+Notes:
+- `docker-compose.oci.yml` uses an external Docker network named `net` so Nginx Proxy Manager can route directly to the app container.
+- The container start command runs `prisma migrate deploy` before starting Next.js.
+- If you keep DB inside the same stack, set strong Postgres credentials before production use.
 
-## 🗄️ Database Schema Overview
+## Share vs Save Behavior
 
-The database is divided into two logical zones:
+- Share: created for each calculation so users can open/share a public build URL.
+- Save: optional account-bound save for logged-in users.
+- Retention: builds currently expire after 30 days.
 
-1.  **Auth Zone (Auth.js):** Standard `User`, `Account`, and `Session` tables to handle Google OAuth seamlessly.
-2.  **App Zone:** \* `Project`: Stores user designs. Includes a `uuid` for secure sharing and an `isPublic` boolean to control visibility.
-      * `Inventory`: `Inverter`, `SolarPanel`, and `Battery` tables defining the physical constraints and specifications of real-world hardware.
+## Pre-Production Checklist
 
-## 🧠 Core Logic Engine
+Complete these before publishing to production:
 
-The calculation engine (`/lib/calculator`) acts as an expert system evaluating inputs against standard safety rules. For a deep dive into the rules engine and AI prompt logic guiding the explanations, see [`agent.md`](https://www.google.com/search?q=./agent.md).
+1. Secrets and auth
+- Set strong `AUTH_SECRET` in production.
+- Configure Google OAuth redirect URIs for your production domain.
+- Ensure `NEXTAUTH_URL` and `NEXT_PUBLIC_APP_URL` match the deployed domain.
 
-## 📄 License
+2. Database and migrations
+- Use a managed production Postgres instance.
+- Replace `db push` workflow with Prisma migrations (`prisma migrate deploy`) for release safety.
+- Set up automated backups and restore test.
 
-This project is licensed under the MIT License.
+3. Security hardening
+- Add request validation/rate limiting on public APIs (`/api/calculate`, exports, share endpoints).
+- Review data exposure policy for public share links.
+- Confirm no development credentials remain in deployed environment.
+
+4. Reliability and observability
+- Add error monitoring (for API/auth/database failures).
+- Add uptime checks for the main page and critical APIs.
+- Add basic runbook for auth/database outage handling.
+
+5. Testing and quality gates
+- Add core engine tests for sizing rules and edge cases.
+- Add API route smoke/integration tests.
+- Require passing `npm run lint` + `npm run build` in CI before deploy.
+
+6. Product/policy readiness
+- Confirm retention policy text shown in UI matches business policy.
+- Add privacy/terms pages if public sharing is enabled.
+
+## Quick Production Answer
+
+Is it okay to not publish yet? Yes. The app is already useful in local/staging.
+
+Do you need more before production? Yes. At minimum: secure env/auth config, migration-based DB deploy, API hardening, and basic monitoring/tests.
