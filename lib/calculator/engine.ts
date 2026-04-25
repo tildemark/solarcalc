@@ -712,7 +712,7 @@ export function calculateSolarSystem(payload: SolarInputPayload): SolarCalculati
       },
     },
     ogMetadata: {
-      title: `${inverterKw.toFixed(0)}kW ${payload.system_type} System`,
+      title: `${inverterKw.toFixed(1)}kW ${payload.system_type} System`,
       stats: [
         `${inverterKw.toFixed(1)}kW Inverter`,
         `${batteryTotalKwh.toFixed(1)}kWh ${batteryModel.chemistry}`,
