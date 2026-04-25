@@ -23,6 +23,8 @@ export type SolarInputPayload = {
   inverter_preference: InverterPreference;
   preferred_battery_chemistry: BatteryChemistry;
   save_project: boolean;
+  monthly_bill_php?: string;
+  cost_per_kwh_php?: string;
 };
 
 export type BomItem = {
