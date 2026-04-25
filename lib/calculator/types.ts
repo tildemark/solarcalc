@@ -9,7 +9,7 @@ export type SolarInputPayload = {
   system_type: SystemType;
   peak_sun_hours: number;
   autonomy_days: number;
-  appliance_voltage: 120 | 240;
+  appliance_voltage: 120 | 220 | 230 | 240;
   panel_preset: PanelPreset;
   panel_watts: number;
   panel_voc: number;
@@ -23,6 +23,7 @@ export type SolarInputPayload = {
   inverter_preference: InverterPreference;
   preferred_battery_chemistry: BatteryChemistry;
   save_project: boolean;
+  allow_split_phase?: boolean;
   monthly_bill_php?: string;
   cost_per_kwh_php?: string;
 };

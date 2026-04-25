@@ -1,9 +1,11 @@
+// (Split-phase SelectField is rendered inside CalculatorForm, not here)
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
 import { BlockMath } from "react-katex";
 import { SystemDiagram } from "@/components/system-diagram";
 import { formatBuildRetentionLabel } from "@/lib/build-retention";
+
 import type {
   SaveResult,
   ShareResult,
@@ -12,12 +14,12 @@ import type {
   SolarInputPayload,
 } from "@/lib/calculator/types";
 
+type SocialPlatform = "facebook" | "x" | "linkedin" | "whatsapp";
+
 type TermDefinition = {
   term: string;
   definition: string;
 };
-
-type SocialPlatform = "facebook" | "x" | "linkedin" | "whatsapp";
 
 const fullReferenceGlossary: TermDefinition[] = [
   {
@@ -74,7 +76,7 @@ function describeStringing(term: string): string | null {
   return `${series} in series and ${parallel} in parallel. Series increases voltage; parallel increases current capacity.`;
 }
 
-function buildGlossary(result: SolarCalculationResult): TermDefinition[] {
+function buildGlossary(result: SolarCalculationResult, payload: SolarInputPayload): TermDefinition[] {
   const entries = new Map<string, string>();
 
   const add = (term: string, definition: string) => {
@@ -108,6 +110,12 @@ function buildGlossary(result: SolarCalculationResult): TermDefinition[] {
       "Split-phase",
       "A 240V arrangement using two synchronized 120V inverter legs that are 180 degrees out of phase, so the system can serve both 120V and 240V loads.",
     );
+    if (payload.allow_split_phase === false) {
+      add(
+        "Split-phase excluded",
+        "You chose to exclude split-phase inverters. If 240V output is required, the system uses multiple single-phase inverters in parallel to achieve the voltage, which may have limitations compared to true split-phase models."
+      );
+    }
   }
 
   if (inverterTopology === "Low-Frequency") {
@@ -132,7 +140,7 @@ function buildGlossary(result: SolarCalculationResult): TermDefinition[] {
   }
 
   if (inverterConfiguration === "Parallel") {
-    add("Parallel inverter", "Multiple inverter units tied together to increase available output power.");
+    add("Parallel inverter", "Multiple inverter units tied together to increase available output power. If split-phase inverters are excluded but 240V is required, this configuration is used as a fallback.");
   }
 
   if (inverterConfiguration === "Single") {
@@ -166,6 +174,7 @@ function buildGlossary(result: SolarCalculationResult): TermDefinition[] {
 
   return Array.from(entries.entries()).map(([term, definition]) => ({ term, definition }));
 }
+// Usage: buildGlossary(result, payload)
 
 const defaultPayload: SolarInputPayload = {
   daily_consumption_kwh: 20,
@@ -415,7 +424,7 @@ function buildQuoteHtml(payload: SolarInputPayload, result: SolarCalculationResu
           ${escapeHtml(createdAt)}
           <br /><br />
           <strong>Voltage</strong>
-          ${payload.appliance_voltage === 240 ? "220V/240V class" : "110V/120V class"}
+          ${[220,230,240].includes(payload.appliance_voltage) ? "220V/230V/240V class" : "110V/120V class"}
         </div>
       </section>
 
@@ -543,7 +552,7 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
       return [];
     }
 
-    return buildGlossary(result);
+    return buildGlossary(result, payload);
   }, [result]);
 
   const fullGlossaryRows = useMemo(() => {
@@ -830,11 +839,13 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
               helpText="Choose the service/loads you need to support."
               value={String(payload.appliance_voltage)}
               onChange={(v) =>
-                setPayload((p) => ({ ...p, appliance_voltage: Number(v) as 120 | 240 }))
+                setPayload((p) => ({ ...p, appliance_voltage: Number(v) as 120 | 220 | 230 | 240 }))
               }
               options={[
                 { value: "120", label: "110V (PH single-phase branch loads)" },
-                { value: "240", label: "220V (PH typical household service)" },
+                { value: "220", label: "220V (PH typical household service)" },
+                { value: "230", label: "230V (IEC/Europe/Asia)" },
+                { value: "240", label: "240V (US/AU/UK split-phase)" },
               ]}
             />
           </div>
