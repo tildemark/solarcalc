@@ -765,7 +765,7 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
             <Field
               label="Monthly Bill Amount (PHP)"
               helpText="Your typical monthly electricity bill. Leave blank if you know your daily kWh."
-              value={payload.monthly_bill_php}
+              value={payload.monthly_bill_php ?? ""}
               onChange={(v) => {
                 setPayload((p) => {
                   const bill = parseFloat(v);
@@ -781,7 +781,7 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
             <Field
               label="Cost per kWh (PHP)"
               helpText="Check your bill for the rate, or use 10 as a typical value."
-              value={payload.cost_per_kwh_php}
+              value={payload.cost_per_kwh_php ?? ""}
               onChange={(v) => {
                 setPayload((p) => {
                   const bill = parseFloat(p.monthly_bill_php || "");
