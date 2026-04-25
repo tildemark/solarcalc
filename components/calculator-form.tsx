@@ -527,11 +527,11 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
       },
       {
         title: "PV current and DC breaker",
-        equation: `I_{pv} = ${computations.protection.pvCurrentA.toFixed(2)}\\,\\mathrm{A},\\quad I_{dc\\ breaker} = 1.25\\times I_{pv} \Rightarrow ${computations.protection.dcBreakerA}\\,\\mathrm{A}`,
+        equation: `I_{pv} = ${computations.protection.pvCurrentA.toFixed(2)}\\,\\mathrm{A},\\quad I_{dc\\ breaker} = 1.25\\times I_{pv} ⇒ ${computations.protection.dcBreakerA}\\,\\mathrm{A}`,
       },
       {
         title: "AC current and AC breaker",
-        equation: `I_{ac} = ${computations.protection.acCurrentA.toFixed(2)}\\,\\mathrm{A},\\quad I_{ac\\ breaker} = 1.25\\times I_{ac} \Rightarrow ${computations.protection.acBreakerA}\\,\\mathrm{A}`,
+        equation: `I_{ac} = ${computations.protection.acCurrentA.toFixed(2)}\\,\\mathrm{A},\\quad I_{ac\\ breaker} = 1.25\\times I_{ac} ⇒ ${computations.protection.acBreakerA}\\,\\mathrm{A}`,
       },
     ];
   }, [result]);
