@@ -798,13 +798,13 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
               label="Daily Consumption (kWh)"
               helpText="Your total energy use in one day from your bill or estimate. If you fill in your bill above, this will auto-calculate."
               value={payload.daily_consumption_kwh}
-              onChange={(v) => setPayload((p) => ({ ...p, daily_consumption_kwh: v }))}
+              onChange={(v) => setPayload((p) => ({ ...p, daily_consumption_kwh: Number(v) }))}
             />
             <Field
               label="Peak Demand (W)"
               helpText="Highest watts running at the same time."
               value={payload.peak_demand_w}
-              onChange={(v) => setPayload((p) => ({ ...p, peak_demand_w: v }))}
+              onChange={(v) => setPayload((p) => ({ ...p, peak_demand_w: Number(v) }))}
             />
             <SelectField
               label="System Type"
@@ -817,13 +817,13 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
               label="Peak Sun Hours"
               helpText="Average full-sun equivalent hours for your location."
               value={payload.peak_sun_hours}
-              onChange={(v) => setPayload((p) => ({ ...p, peak_sun_hours: v }))}
+              onChange={(v) => setPayload((p) => ({ ...p, peak_sun_hours: Number(v) }))}
             />
             <Field
               label="Autonomy Days"
               helpText="How many days the battery should support loads with little/no solar."
               value={payload.autonomy_days}
-              onChange={(v) => setPayload((p) => ({ ...p, autonomy_days: v }))}
+              onChange={(v) => setPayload((p) => ({ ...p, autonomy_days: Number(v) }))}
             />
             <SelectField
               label="Appliance Voltage (PH)"
@@ -860,7 +860,7 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
               onChange={(v) =>
                 setPayload((p) => ({
                   ...p,
-                  panel_watts: v,
+                  panel_watts: Number(v),
                   panel_preset: "Custom",
                 }))
               }
@@ -869,19 +869,19 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
               label="Panel Voc (V)"
               helpText="Advanced: open-circuit voltage from panel datasheet. Safe to keep preset if you do not have exact specs yet."
               value={payload.panel_voc}
-              onChange={(v) => setPayload((p) => ({ ...p, panel_voc: v, panel_preset: "Custom" }))}
+              onChange={(v) => setPayload((p) => ({ ...p, panel_voc: Number(v), panel_preset: "Custom" }))}
             />
             <Field
               label="Panel Vmp (V)"
               helpText="Advanced: voltage at maximum power from panel datasheet. Keep preset when panel is not finalized."
               value={payload.panel_vmp}
-              onChange={(v) => setPayload((p) => ({ ...p, panel_vmp: v, panel_preset: "Custom" }))}
+              onChange={(v) => setPayload((p) => ({ ...p, panel_vmp: Number(v), panel_preset: "Custom" }))}
             />
             <Field
               label="Panel Isc (A)"
               helpText="Advanced: short-circuit current from panel datasheet. Keep preset unless exact panel specs are available."
               value={payload.panel_isc}
-              onChange={(v) => setPayload((p) => ({ ...p, panel_isc: v, panel_preset: "Custom" }))}
+              onChange={(v) => setPayload((p) => ({ ...p, panel_isc: Number(v), panel_preset: "Custom" }))}
             />
             <SelectField
               label="Bifacial Panel"
@@ -898,7 +898,7 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
                 label="Bifacial Gain (%)"
                 helpText="Extra yield estimate from rear-side capture."
                 value={payload.bifacial_gain_percent}
-                onChange={(v) => setPayload((p) => ({ ...p, bifacial_gain_percent: v }))}
+                onChange={(v) => setPayload((p) => ({ ...p, bifacial_gain_percent: Number(v) }))}
               />
             ) : null}
           </div>
@@ -928,13 +928,13 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
                   label="Largest Motor/Pump Running Watts"
                   helpText="Running power of the largest motor load."
                   value={payload.motor_running_w}
-                  onChange={(v) => setPayload((p) => ({ ...p, motor_running_w: v }))}
+                  onChange={(v) => setPayload((p) => ({ ...p, motor_running_w: Number(v) }))}
                 />
                 <Field
                   label="Motor Starting Multiplier"
                   helpText="Typical startup multiplier is around 2x to 5x."
                   value={payload.motor_starting_multiplier}
-                  onChange={(v) => setPayload((p) => ({ ...p, motor_starting_multiplier: v }))}
+                  onChange={(v) => setPayload((p) => ({ ...p, motor_starting_multiplier: Number(v) }))}
                 />
                 <SelectField
                   label="Inverter Topology Preference"
@@ -1135,8 +1135,8 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
 type FieldProps = {
   label: string;
   helpText?: string;
-  value: number;
-  onChange: (value: number) => void;
+  value: string | number;
+  onChange: (value: string) => void;
 };
 
 function Field({ label, helpText, value, onChange }: FieldProps) {
@@ -1146,7 +1146,7 @@ function Field({ label, helpText, value, onChange }: FieldProps) {
       <input
         type="number"
         value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
+        onChange={(event) => onChange(event.target.value)}
       />
       {helpText ? <p className="help-text">{helpText}</p> : null}
     </div>
