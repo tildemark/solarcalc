@@ -169,6 +169,8 @@ function buildGlossary(result: SolarCalculationResult): TermDefinition[] {
 
 const defaultPayload: SolarInputPayload = {
   daily_consumption_kwh: 20,
+  monthly_bill_php: "",
+  cost_per_kwh_php: "10",
   peak_demand_w: 7000,
   system_type: "Off-Grid",
   peak_sun_hours: 5,
@@ -761,8 +763,40 @@ export function CalculatorForm({ userEmail }: CalculatorFormProps) {
           <h3 style={{ margin: 0 }}>1) Load Profile</h3>
           <div className="grid grid-2">
             <Field
+              label="Monthly Bill Amount (PHP)"
+              helpText="Your typical monthly electricity bill. Leave blank if you know your daily kWh."
+              value={payload.monthly_bill_php}
+              onChange={(v) => {
+                setPayload((p) => {
+                  const bill = parseFloat(v);
+                  const rate = parseFloat(p.cost_per_kwh_php || "10");
+                  let daily = p.daily_consumption_kwh;
+                  if (!isNaN(bill) && !isNaN(rate) && rate > 0) {
+                    daily = +(bill / rate / 30).toFixed(2);
+                  }
+                  return { ...p, monthly_bill_php: v, daily_consumption_kwh: daily };
+                });
+              }}
+            />
+            <Field
+              label="Cost per kWh (PHP)"
+              helpText="Check your bill for the rate, or use 10 as a typical value."
+              value={payload.cost_per_kwh_php}
+              onChange={(v) => {
+                setPayload((p) => {
+                  const bill = parseFloat(p.monthly_bill_php || "");
+                  const rate = parseFloat(v);
+                  let daily = p.daily_consumption_kwh;
+                  if (!isNaN(bill) && !isNaN(rate) && rate > 0) {
+                    daily = +(bill / rate / 30).toFixed(2);
+                  }
+                  return { ...p, cost_per_kwh_php: v, daily_consumption_kwh: daily };
+                });
+              }}
+            />
+            <Field
               label="Daily Consumption (kWh)"
-              helpText="Your total energy use in one day from your bill or estimate."
+              helpText="Your total energy use in one day from your bill or estimate. If you fill in your bill above, this will auto-calculate."
               value={payload.daily_consumption_kwh}
               onChange={(v) => setPayload((p) => ({ ...p, daily_consumption_kwh: v }))}
             />
